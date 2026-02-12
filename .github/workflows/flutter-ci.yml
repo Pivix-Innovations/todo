@@ -1,0 +1,60 @@
+name: Flutter CI
+
+on:
+  push:
+    branches:
+      - "ci/**"
+  pull_request:
+    branches:
+      - "ci/**"
+  workflow_dispatch:
+
+jobs:
+  build-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout code
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Setup Flutter with cache
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: "3.19.0"
+          channel: "stable"
+          cache: true
+
+      # Install dependencies
+      - name: Install dependencies
+        run: flutter pub get
+
+      # Static analysis
+      - name: Analyze project
+        run: flutter analyze
+
+      # Run unit/widget tests
+      - name: Run tests
+        run: flutter test --coverage
+
+      # Build release APK
+      - name: Build APK
+        run: flutter build apk --release
+
+      # Build release AAB (Play Store)
+      - name: Build App Bundle
+        run: flutter build appbundle --release
+
+      # Upload artifacts
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-apk
+          path: build/app/outputs/flutter-apk/app-release.apk
+
+      - name: Upload AAB
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-aab
+          path: build/app/outputs/bundle/release/app-release.aab
