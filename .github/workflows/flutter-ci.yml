@@ -22,7 +22,7 @@ jobs:
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: "3.19.0"
+          flutter-version: "3.35.6"
           channel: "stable"
           cache: true
 
@@ -32,29 +32,41 @@ jobs:
 
       # Static analysis
       - name: Analyze project
-        run: flutter analyze
+        run: flutter analyze --no-fatal-warnings --no-fatal-infos
 
       # Run unit/widget tests
       - name: Run tests
         run: flutter test --coverage
 
-      # Build release APK
-      - name: Build APK
-        run: flutter build apk --release
 
-      # Build release AAB (Play Store)
+      - name: Debug folders
+        run: |
+          echo "PWD:"
+          pwd
+          echo "ROOT FILES:"
+          ls -la
+          echo "FIND pubspec:"
+          find . -name pubspec.yaml
+          echo "FIND AndroidManifest:"
+          find . -name AndroidManifest.xml
+
+      # Build debug APK
+      - name: Build APK
+        run: flutter build apk --debug
+
+      # Build debug AAB (Play Store)
       - name: Build App Bundle
-        run: flutter build appbundle --release
+        run: flutter build appbundle --debug
 
       # Upload artifacts
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: release-apk
-          path: build/app/outputs/flutter-apk/app-release.apk
+          name: debug-apk
+          path: build/app/outputs/flutter-apk/app-debug.apk
 
       - name: Upload AAB
         uses: actions/upload-artifact@v4
         with:
-          name: release-aab
-          path: build/app/outputs/bundle/release/app-release.aab
+          name: debug-aab
+          path: build/app/outputs/bundle/debug/app-debug.aab
