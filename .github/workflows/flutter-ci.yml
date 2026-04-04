@@ -17,15 +17,6 @@ jobs:
       # Checkout code
       - name: Checkout repository
         uses: actions/checkout@v4
-
-      # Setup Flutter with cache
-      - name: Setup Flutter
-        uses: subosito/flutter-action@v2
-        with:
-          flutter-version: "3.35.6"
-          channel: "stable"
-          cache: true
-          architecture: X64
           
       - name: Check Flutter version
         run: flutter --version
@@ -41,36 +32,3 @@ jobs:
       # Run unit/widget tests
       - name: Run tests
         run: flutter test --coverage
-
-
-      - name: Debug folders
-        run: |
-          echo "PWD:"
-          pwd
-          echo "ROOT FILES:"
-          ls -la
-          echo "FIND pubspec:"
-          find . -name pubspec.yaml
-          echo "FIND AndroidManifest:"
-          find . -name AndroidManifest.xml
-
-      # Build debug APK
-      - name: Build APK
-        run: flutter build apk --debug
-
-      # Build debug AAB (Play Store)
-      - name: Build App Bundle
-        run: flutter build appbundle --debug
-
-      # Upload artifacts
-      - name: Upload APK
-        uses: actions/upload-artifact@v4
-        with:
-          name: debug-apk
-          path: build/app/outputs/flutter-apk/app-debug.apk
-
-      - name: Upload AAB
-        uses: actions/upload-artifact@v4
-        with:
-          name: debug-aab
-          path: build/app/outputs/bundle/debug/app-debug.aab
